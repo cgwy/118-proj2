@@ -1,0 +1,47 @@
+##tips from TA
+#1: rfc-793 checksum:  16bit 1's complement
+#2: cyclic buf, 2-3 times of maximal sender window size
+#	file kept open until end of transmission
+#	read file little by little -- read only when sequence number increases;
+#	time out: 4-6s(as in standard RTO), use settimer sys-call
+
+
+#Kai Wang
+#This file describe the high-level designs of the FTP server.
+
+#reference: 
+#	ch3-part1: 
+#	GBN: 50
+#	tcp header: 58
+#	3-way hand-shake & connection-closing: 80 
+#
+
+1.	Server side: C++	Client side: C++
+2.	UDP;  server = sender,  client = receiver, which request file from sender
+	
+	ServerShell> sender <port> <enable_congestion_control>
+	ClientShell> reciever <sender_host> <port> <fileName> <enable_congestion_control>
+
+3.	max pkt size = 1KB(head not included), header include: sequence number[, Source, Dest Port...]
+4.	print message to screen during trasition,	
+	e.g:	Data 43, cwnd = XXX, ssthreash = XXX
+			ACK	44,
+			...
+
+
+Development Iteration:
+Round-1:	Basic Functionalities with GBN, Provide the interface for congestion control.
+		1-1:	Client-Server Communication with UDP & select,
+				a) design packet
+				b) connection set-up & closing:
+				c) enable file transmission
+				----Nov 17
+
+		1-2:	GBN implementation:	pkt slicing, header generation, client-side re-assemble file -- 2h
+		1-3:	Corruption & Loss simulation -- 1h
+	
+Round-2:	Implement congestion control.
+Round-3:	Client has at least 2-thread/process:
+				one to receive file
+				one to receive command from console (pause, stop, resume)
+Round-4:	Implement breakpoint resume.
